@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import { api } from "../services/api";
+import { getBatchQuotes } from "../services/marketData";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "../components/Table";
 import { LineChart } from "lucide-react";
 
@@ -14,18 +15,34 @@ export default function Market() {
 
     const fetchInstruments = async () => {
       try {
-        // API: GET /api/instruments -> array | { items: array }
-        const { data } = await axios.get("/api/instruments");
+        // Try backend API first
+        const data = await api.get("/instruments");
         if (isMounted) {
           setInstruments(Array.isArray(data) ? data : data?.items || []);
         }
       } catch (err) {
-        if (isMounted) {
-          setError(
-            err?.response?.data?.message ||
+        // Fallback to Alpha Vantage API if backend fails
+        console.warn("Backend API failed, trying Alpha Vantage:", err);
+        try {
+          // Popular stocks to display as fallback
+          const symbols = ['AAPL', 'TSLA', 'MSFT', 'NVDA', 'GOOGL', 'AMZN', 'META', 'NFLX'];
+          const quotes = await getBatchQuotes(symbols, 'alphavantage');
+          
+          if (isMounted) {
+            setInstruments(quotes.map(quote => ({
+              id: quote.symbol,
+              symbol: quote.symbol,
+              name: quote.symbol, // You might want to add company names
+              price: `$${quote.price.toFixed(2)}`,
+            })));
+          }
+        } catch (fallbackErr) {
+          if (isMounted) {
+            setError(
               err?.message ||
-              "Unable to load instruments."
-          );
+              "Unable to load instruments from backend or market data API."
+            );
+          }
         }
       } finally {
         if (isMounted) {
@@ -36,8 +53,12 @@ export default function Market() {
 
     fetchInstruments();
 
+    // Set up polling for real-time updates (every 60 seconds to respect API limits)
+    const interval = setInterval(fetchInstruments, 60000);
+
     return () => {
       isMounted = false;
+      clearInterval(interval);
     };
   }, []);
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import { api } from "../services/api";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "../components/Table";
 import { ReceiptText } from "lucide-react";
 
@@ -14,7 +14,7 @@ export default function Transactions() {
     const fetchTransactions = async () => {
       try {
         // API: GET /api/transactions -> array | { items: array }
-        const { data } = await axios.get("/api/transactions");
+        const data = await api.get("/transactions");
         const list = Array.isArray(data) ? data : data?.items || [];
         if (isMounted) {
           setTransactions(list);
@@ -22,8 +22,7 @@ export default function Transactions() {
       } catch (err) {
         if (isMounted) {
           setError(
-            err?.response?.data?.message ||
-              err?.message ||
+            err?.message ||
               "Unable to load transactions."
           );
         }
@@ -36,8 +35,12 @@ export default function Transactions() {
 
     fetchTransactions();
 
+    // Set up polling for real-time updates (every 30 seconds)
+    const interval = setInterval(fetchTransactions, 30000);
+
     return () => {
       isMounted = false;
+      clearInterval(interval);
     };
   }, []);
 

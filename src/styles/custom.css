@@ -1,0 +1,39 @@
+/* Custom Theme Styles */
+/* Add your custom CSS here - you can paste the CSS you provided */
+
+/* Bohuan Personal Font */
+@font-face {
+  font-family: 'Bohuan Personal';
+  src: url('/fonts/Bohuanpersonal.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Apply font globally */
+body {
+  font-family: 'Bohuan Personal', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Example: Typography and base styles */
+@media(min-width:767px) and (max-width:1000px){
+  html{font-size:21.6px}
+  body h1{font-size:40px}
+  body h2{font-size:38.4px}
+  body h3{font-size:24px}
+  body h4{font-size:19.2px}
+  body h5{font-size:12.8px}
+  body h6{font-size:11.2px}
+}
+
+@media(max-width:767px){
+  html{font-size:19.2px}
+  body h1{font-size:40px}
+  body h2{font-size:32px}
+  body h3{font-size:18px}
+  body h4{font-size:27px}
+  body h5{font-size:9.6px}
+  body h6{font-size:8.4px}
+}
+
+/* Add more custom styles as needed */

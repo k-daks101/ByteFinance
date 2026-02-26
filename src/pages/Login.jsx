@@ -1,18 +1,17 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login as loginRequest } from "../api/auth";
+import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/Button";
 import FormInput from "../components/FormInput";
 import ThemeToggle from "../components/ThemeToggle";
 import { LogIn } from "lucide-react";
-import AuthContext from "../context/AuthContext";
+import ByteFinanceLogo from "../components/ByteFinanceLogo";
 
 export default function Login() {
   const navigate = useNavigate();
-  const auth = useContext(AuthContext);
+  const { login, loading, error } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [localError, setLocalError] = useState("");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -21,29 +20,22 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError("");
-    setSubmitting(true);
+    setLocalError("");
+
+    if (!form.email || !form.password) {
+      setLocalError("Please enter email and password.");
+      return;
+    }
 
     try {
-      // API: POST /api/auth/login -> { token | accessToken }
-      const data = await loginRequest({
-        email: form.email,
-        password: form.password,
-      });
-      const token = data?.token || data?.accessToken;
-      if (!token) {
-        throw new Error("Missing token in response.");
-      }
-      auth?.login(token);
+      await login(form.email, form.password, false);
       navigate("/dashboard", { replace: true });
     } catch (err) {
       const message =
-        err?.response?.data?.message ||
+        err?.errors?.email?.[0] ||
         err?.message ||
         "Unable to login. Please try again.";
-      setError(message);
-    } finally {
-      setSubmitting(false);
+      setLocalError(message);
     }
   };
 
@@ -52,9 +44,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         <div className="bf-card shadow-md overflow-hidden">
           <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 px-6 py-6 text-white">
-            <p className="text-xs uppercase tracking-widest text-indigo-100">
-              ByteFinance
-            </p>
+            <ByteFinanceLogo className="text-white" />
             <div className="mt-2 flex items-center gap-2">
               <LogIn className="h-5 w-5" />
               <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -84,14 +74,16 @@ export default function Login() {
                 value={form.password}
                 onChange={handleChange}
               />
-              {error && <p className="text-sm text-red-600">{error}</p>}
+              {(error || localError) && (
+                <p className="text-sm text-red-600">{error || localError}</p>
+              )}
               <Button
                 type="submit"
-                disabled={submitting}
+                disabled={loading}
                 variant="secondary"
                 className="w-full"
               >
-                {submitting ? "Signing in..." : "Sign in"}
+                {loading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
             <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">

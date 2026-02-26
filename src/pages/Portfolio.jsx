@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { api } from "../services/api";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "../components/Table";
 import { Briefcase } from "lucide-react";
 
@@ -14,15 +14,14 @@ export default function Portfolio() {
     const fetchPortfolio = async () => {
       try {
         // API: GET /api/portfolio -> portfolio summary and holdings
-        const { data: response } = await axios.get("/api/portfolio");
+        const response = await api.get("/portfolio");
         if (isMounted) {
           setData(response);
         }
       } catch (err) {
         if (isMounted) {
           setError(
-            err?.response?.data?.message ||
-              err?.message ||
+            err?.message ||
               "Unable to load portfolio."
           );
         }
@@ -35,8 +34,12 @@ export default function Portfolio() {
 
     fetchPortfolio();
 
+    // Set up polling for real-time updates (every 30 seconds)
+    const interval = setInterval(fetchPortfolio, 30000);
+
     return () => {
       isMounted = false;
+      clearInterval(interval);
     };
   }, []);
 

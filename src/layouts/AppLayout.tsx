@@ -7,6 +7,7 @@ import {
   Users,
 } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle";
+import ByteFinanceLogo from "../components/ByteFinanceLogo";
 
 const navItems = [
   { label: "Dashboard", to: "/dashboard", Icon: LayoutDashboard },
@@ -22,15 +23,7 @@ export const AppLayout = (): JSX.Element => {
       <div className="flex min-h-screen">
         <aside className="w-64 bg-indigo-900 text-indigo-100 sticky top-0 h-screen">
           <div className="p-6">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-indigo-900 font-semibold">
-                B
-              </div>
-              <div>
-                <h1 className="text-lg font-semibold text-white">ByteFinance</h1>
-                <p className="text-xs text-indigo-200">Trading Simulation</p>
-              </div>
-            </div>
+            <ByteFinanceLogo className="items-start" />
           </div>
           <nav className="px-4 space-y-2">
             {navItems.map((item) => (

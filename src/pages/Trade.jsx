@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { api } from "../services/api";
+import { getBatchQuotes } from "../services/marketData";
 import Button from "../components/Button";
 import FormInput from "../components/FormInput";
 import {
@@ -18,12 +19,126 @@ export default function Trade() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const watchlist = [
-    { name: "Apple Inc.", symbol: "AAPL", price: "178.42", change: "+2.34%", volume: "1.2M", trend: "up" },
-    { name: "Tesla Motors", symbol: "TSLA", price: "242.18", change: "-1.87%", volume: "2.8M", trend: "down" },
-    { name: "Microsoft Corp.", symbol: "MSFT", price: "412.56", change: "+0.92%", volume: "890K", trend: "up" },
-    { name: "NVIDIA Corp.", symbol: "NVDA", price: "875.28", change: "+5.67%", volume: "3.1M", trend: "up" },
-  ];
+  const [watchlist, setWatchlist] = useState([]);
+  const [portfolio, setPortfolio] = useState(null);
+  const [instruments, setInstruments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    virtualBalance: "Ⓥ 0.00",
+    openPositions: 0,
+    todayPL: "+0.0%",
+    riskLevel: "Low",
+  });
+
+  // Helper function to format volume
+  const formatVolume = (volume) => {
+    if (!volume) return '0';
+    if (volume >= 1000000) {
+      return `${(volume / 1000000).toFixed(1)}M`;
+    }
+    if (volume >= 1000) {
+      return `${(volume / 1000).toFixed(1)}K`;
+    }
+    return volume.toString();
+  };
+
+  // Fetch watchlist, portfolio, and instruments
+  useEffect(() => {
+    let isMounted = true;
+    const fetchData = async () => {
+      try {
+        // Fetch watchlist (or use instruments if no watchlist endpoint)
+        const watchlistData = await api.get("/watchlist").catch(() => null);
+        const portfolioData = await api.get("/portfolio").catch(() => null);
+        const instrumentsData = await api.get("/instruments").catch(() => null);
+
+        if (isMounted) {
+          // Set watchlist (use instruments if no watchlist endpoint exists)
+          if (watchlistData && Array.isArray(watchlistData)) {
+            setWatchlist(watchlistData);
+          } else if (instrumentsData) {
+            const instList = Array.isArray(instrumentsData) ? instrumentsData : instrumentsData?.items || [];
+            // Take first 4-6 instruments as watchlist
+            setWatchlist(instList.slice(0, 6).map(inst => ({
+              name: inst.name || inst.symbol,
+              symbol: inst.symbol,
+              price: inst.price || "0.00",
+              change: inst.change || "+0.00%",
+              volume: inst.volume || "0",
+              trend: inst.change?.startsWith("-") ? "down" : "up",
+            })));
+          } else {
+            // Fallback to Alpha Vantage for real-time watchlist data
+            try {
+              const popularStocks = ['AAPL', 'TSLA', 'MSFT', 'NVDA', 'GOOGL', 'AMZN'];
+              const quotes = await getBatchQuotes(popularStocks, 'alphavantage');
+              setWatchlist(quotes.map(quote => ({
+                name: quote.symbol,
+                symbol: quote.symbol,
+                price: quote.price.toFixed(2),
+                change: quote.changePercent,
+                volume: quote.volume ? formatVolume(quote.volume) : '0',
+                trend: quote.change >= 0 ? 'up' : 'down',
+              })));
+            } catch (avError) {
+              console.warn('Alpha Vantage fallback failed:', avError);
+            }
+          }
+
+          // Set portfolio data
+          if (portfolioData) {
+            setPortfolio(portfolioData);
+            const cashBalance = portfolioData.cashBalance ?? portfolioData.cash ?? 0;
+            const holdings = portfolioData.holdings ?? [];
+            const portfolioValue = portfolioData.portfolioValue ?? portfolioData.totalValue ?? 0;
+            
+            setStats({
+              virtualBalance: `Ⓥ ${Number(cashBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+              openPositions: holdings.length,
+              todayPL: portfolioData.todayPL || "+0.0%",
+              riskLevel: portfolioData.riskLevel || "Low",
+            });
+          }
+
+          // Set instruments for dropdown
+          if (instrumentsData) {
+            const instList = Array.isArray(instrumentsData) ? instrumentsData : instrumentsData?.items || [];
+            setInstruments(instList);
+          } else {
+            // Fallback: Use Alpha Vantage for instrument list
+            try {
+              const popularStocks = ['AAPL', 'TSLA', 'MSFT', 'NVDA', 'GOOGL', 'AMZN', 'META', 'NFLX'];
+              const quotes = await getBatchQuotes(popularStocks, 'alphavantage');
+              setInstruments(quotes.map(quote => ({
+                id: quote.symbol,
+                symbol: quote.symbol,
+                name: quote.symbol,
+                price: quote.price.toFixed(2),
+              })));
+            } catch (avError) {
+              console.warn('Alpha Vantage fallback for instruments failed:', avError);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching trade data:", err);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    // Set up polling for real-time updates (every 60 seconds to respect API limits)
+    const interval = setInterval(fetchData, 60000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -38,17 +153,30 @@ export default function Trade() {
 
     try {
       // API: POST /api/trades -> success response
-      await axios.post("/api/trades", {
+      await api.post("/trades", {
         instrumentId: form.instrumentId,
         side: form.side,
         quantity: Number(form.quantity),
       });
       setSuccess("Trade submitted successfully.");
       setForm({ instrumentId: "", side: "buy", quantity: "" });
+      
+      // Refresh portfolio data after successful trade
+      const portfolioData = await api.get("/portfolio").catch(() => null);
+      if (portfolioData) {
+        setPortfolio(portfolioData);
+        const cashBalance = portfolioData.cashBalance ?? portfolioData.cash ?? 0;
+        const holdings = portfolioData.holdings ?? [];
+        setStats(prev => ({
+          ...prev,
+          virtualBalance: `Ⓥ ${Number(cashBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          openPositions: holdings.length,
+        }));
+      }
     } catch (err) {
       const message =
-        err?.response?.data?.message ||
         err?.message ||
+        err?.error ||
         "Unable to submit trade.";
       setError(message);
     } finally {
@@ -78,7 +206,7 @@ export default function Trade() {
                 Virtual Balance
               </span>
               <span className="text-base font-bold text-amber-900">
-                Ⓥ 10,000.00
+                {loading ? "Loading..." : stats.virtualBalance}
               </span>
             </div>
           </div>
@@ -125,7 +253,9 @@ export default function Trade() {
               <Activity className="h-3.5 w-3.5" />
               {stat.label}
             </div>
-            <p className={`mt-2 text-lg font-bold ${stat.tone}`}>{stat.value}</p>
+            <p className={`mt-2 text-lg font-bold ${stat.tone}`}>
+              {loading ? "..." : stat.value}
+            </p>
           </div>
         ))}
       </section>
@@ -158,7 +288,20 @@ export default function Trade() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {watchlist.map((item) => (
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-4 text-center text-sm text-slate-500">
+                    Loading watchlist...
+                  </td>
+                </tr>
+              ) : watchlist.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-4 text-center text-sm text-slate-500">
+                    No watchlist items available.
+                  </td>
+                </tr>
+              ) : (
+                watchlist.map((item) => (
                 <tr key={item.symbol} className="text-slate-700">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -203,7 +346,8 @@ export default function Trade() {
                     </button>
                   </td>
                 </tr>
-              ))}
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -224,11 +368,14 @@ export default function Trade() {
               value={form.instrumentId}
               onChange={handleChange}
               className="w-full max-w-sm rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"
+              disabled={loading || instruments.length === 0}
             >
               <option value="">Select an instrument</option>
-              <option value="AAPL">AAPL</option>
-              <option value="TSLA">TSLA</option>
-              <option value="MSFT">MSFT</option>
+              {instruments.map((inst) => (
+                <option key={inst.id || inst.symbol} value={inst.id || inst.symbol}>
+                  {inst.symbol} - {inst.name || inst.symbol}
+                </option>
+              ))}
             </select>
           </div>
           <div className="space-y-1">
@@ -302,28 +449,30 @@ export default function Trade() {
           <div className="bf-card p-6 space-y-4">
             <h3 className="text-lg font-bold text-slate-900">Watchlist</h3>
             <div className="space-y-3">
-              {[
-                { symbol: "AAPL", price: "$189.20", change: "+0.8%" },
-                { symbol: "TSLA", price: "$252.30", change: "-1.4%" },
-                { symbol: "MSFT", price: "$412.10", change: "+0.6%" },
-              ].map((item) => (
-                <div
-                  key={item.symbol}
-                  className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2 text-sm"
-                >
-                  <span className="font-semibold text-slate-900">{item.symbol}</span>
-                  <span className="text-slate-500">{item.price}</span>
-                  <span
-                    className={
-                      item.change.startsWith("-")
-                        ? "text-rose-500"
-                        : "text-emerald-600"
-                    }
+              {loading ? (
+                <div className="text-sm text-slate-500">Loading...</div>
+              ) : watchlist.length === 0 ? (
+                <div className="text-sm text-slate-500">No watchlist items</div>
+              ) : (
+                watchlist.slice(0, 3).map((item) => (
+                  <div
+                    key={item.symbol}
+                    className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2 text-sm"
                   >
-                    {item.change}
-                  </span>
-                </div>
-              ))}
+                    <span className="font-semibold text-slate-900">{item.symbol}</span>
+                    <span className="text-slate-500">Ⓥ {item.price}</span>
+                    <span
+                      className={
+                        item.change.startsWith("-")
+                          ? "text-rose-500"
+                          : "text-emerald-600"
+                      }
+                    >
+                      {item.change}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
             <button className="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
               Manage Watchlist

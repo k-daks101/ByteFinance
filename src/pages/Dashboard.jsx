@@ -1,7 +1,54 @@
 import { Link } from "react-router-dom";
 import { LayoutDashboard } from "lucide-react";
+import { useEffect, useState } from "react";
+import { api } from "../services/api";
 
 export default function Dashboard() {
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchDashboardData = async () => {
+      try {
+        // Try to fetch dashboard data, or fallback to portfolio
+        const data = await api.get("/dashboard").catch(async () => {
+          // Fallback to portfolio if dashboard endpoint doesn't exist
+          return await api.get("/portfolio").catch(() => null);
+        });
+
+        if (isMounted && data) {
+          setDashboardData(data);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err?.message || "Unable to load dashboard data.");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchDashboardData();
+
+    // Set up polling for real-time updates (every 30 seconds)
+    const interval = setInterval(fetchDashboardData, 30000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Extract data with fallbacks
+  const cashBalance = dashboardData?.cashBalance ?? dashboardData?.cash ?? "$10,000.00";
+  const totalValue = dashboardData?.portfolioValue ?? dashboardData?.totalValue ?? "$12,450.20";
+  const todayPL = dashboardData?.todayPL ?? dashboardData?.todayProfitLoss ?? "-$120.50";
+  const todayPLPercent = dashboardData?.todayPLPercent ?? "-1.2%";
   return (
     <div className="space-y-8">
       <header className="flex items-center justify-between gap-4 bf-card px-6 py-4">
@@ -54,9 +101,9 @@ export default function Dashboard() {
       <section className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            { title: "Cash Balance", value: "$10,000.00", note: "Virtual Currency" },
-            { title: "Total Value", value: "$12,450.20", note: "+24.5%" },
-            { title: "Today&apos;s P/L", value: "-$120.50", note: "-1.2%" },
+            { title: "Cash Balance", value: loading ? "Loading..." : cashBalance, note: "Virtual Currency" },
+            { title: "Total Value", value: loading ? "Loading..." : totalValue, note: dashboardData?.totalValueChange || "+24.5%" },
+            { title: "Today&apos;s P/L", value: loading ? "Loading..." : todayPL, note: todayPLPercent },
           ].map((card) => (
             <div
               key={card.title}
@@ -171,11 +218,17 @@ export default function Dashboard() {
             <div className="mt-4 flex items-center justify-between">
               <div>
                 <p className="text-xs text-slate-400">S&P 500 ETF</p>
-                <p className="text-lg font-semibold text-slate-900">$412.50</p>
+                <p className="text-lg font-semibold text-slate-900">
+                  {loading ? "Loading..." : dashboardData?.marketPrice || "$412.50"}
+                </p>
               </div>
               <div className="text-right">
                 <p className="text-xs text-slate-400">24h Change</p>
-                <p className="text-sm font-semibold text-emerald-600">+1.2%</p>
+                <p className={`text-sm font-semibold ${
+                  dashboardData?.marketChange?.startsWith("-") ? "text-rose-600" : "text-emerald-600"
+                }`}>
+                  {loading ? "..." : dashboardData?.marketChange || "+1.2%"}
+                </p>
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3">

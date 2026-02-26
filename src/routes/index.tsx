@@ -21,9 +21,9 @@ import Transactions from "../pages/Transactions";
 export const AppRoutes = (): JSX.Element => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
 
       <Route element={<AuthenticatedRoute />}>
         <Route element={<AppLayout />}>

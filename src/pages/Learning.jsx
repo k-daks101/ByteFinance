@@ -211,7 +211,7 @@ export default function Learning() {
                 <div key={step.label} className="flex items-center">
                   <div className="flex flex-col items-center">
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm ${
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm overflow-hidden ${
                         step.status === "done"
                           ? "bg-emerald-500 text-white"
                           : step.status === "active"
@@ -219,7 +219,9 @@ export default function Learning() {
                           : "bg-slate-100 text-slate-500"
                       }`}
                     >
-                      {step.status === "done" ? "✓" : index + 1}
+                      <span className="flex items-center justify-center leading-none text-center">
+                        {step.status === "done" ? "✓" : index + 1}
+                      </span>
                     </div>
                     <span className="text-xs text-muted-foreground mt-1">{step.label}</span>
                   </div>
