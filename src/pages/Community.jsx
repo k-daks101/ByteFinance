@@ -28,7 +28,7 @@ export default function Community() {
                 <Flame className="h-5 w-5 text-amber-500" />
                 <h2 className="text-lg font-bold text-foreground">Trending Topics</h2>
               </div>
-              <button className="text-sm font-semibold text-indigo-600 hover:text-indigo-700">
+              <button className="bf-btn-interactive text-sm font-semibold text-indigo-600 hover:text-indigo-700">
                 View all
               </button>
             </div>
@@ -109,7 +109,7 @@ export default function Community() {
               placeholder="What do you want to ask the community?"
               className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-slate-400"
             />
-            <button className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
+            <button className="bf-btn-interactive w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 shadow-sm">
               Create Post
             </button>
           </div>
@@ -133,7 +133,7 @@ export default function Community() {
                 </div>
               ))}
             </div>
-            <button className="w-full rounded-lg border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent">
+            <button className="bf-btn-interactive w-full rounded-lg border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent">
               Join a Challenge
             </button>
           </div>

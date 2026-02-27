@@ -29,6 +29,20 @@
   .bf-divider {
     @apply border-t border-border my-6;
   }
+
+  /* Interactive button feel: hover lift, shadow, active press */
+  .bf-btn-interactive {
+    @apply transition-all duration-200 ease-out;
+  }
+  .bf-btn-interactive:hover:not(:disabled) {
+    @apply -translate-y-0.5 shadow-md;
+  }
+  .bf-btn-interactive:active:not(:disabled) {
+    @apply translate-y-0 shadow-sm;
+  }
+  .bf-btn-interactive:focus-visible {
+    @apply outline-none ring-2 ring-indigo-500 ring-offset-2;
+  }
 }
 
 :root {

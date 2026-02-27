@@ -267,10 +267,10 @@ export default function Trade() {
             <h2 className="text-lg font-bold text-slate-900">Market Watchlist</h2>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <button className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">
+            <button className="bf-btn-interactive rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white shadow-sm">
               All Markets
             </button>
-            <button className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-50">
+            <button className="bf-btn-interactive rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-50">
               Favorites
             </button>
           </div>
@@ -341,7 +341,7 @@ export default function Trade() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <button className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700">
+                    <button className="bf-btn-interactive rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700 shadow-sm">
                       Trade
                     </button>
                   </td>
@@ -386,9 +386,9 @@ export default function Trade() {
               <button
                 type="button"
                 onClick={() => setForm((prev) => ({ ...prev, side: "buy" }))}
-                className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold ${
+                className={`bf-btn-interactive flex-1 rounded-lg px-3 py-2 text-sm font-semibold ${
                   form.side === "buy"
-                    ? "bg-emerald-500 text-white"
+                    ? "bg-emerald-500 text-white shadow-sm"
                     : "border border-slate-200 bg-white text-slate-700"
                 }`}
               >
@@ -397,9 +397,9 @@ export default function Trade() {
               <button
                 type="button"
                 onClick={() => setForm((prev) => ({ ...prev, side: "sell" }))}
-                className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold ${
+                className={`bf-btn-interactive flex-1 rounded-lg px-3 py-2 text-sm font-semibold ${
                   form.side === "sell"
-                    ? "bg-rose-500 text-white"
+                    ? "bg-rose-500 text-white shadow-sm"
                     : "border border-slate-200 bg-white text-slate-700"
                 }`}
               >
@@ -474,7 +474,7 @@ export default function Trade() {
                 ))
               )}
             </div>
-            <button className="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+            <button className="bf-btn-interactive w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
               Manage Watchlist
             </button>
           </div>

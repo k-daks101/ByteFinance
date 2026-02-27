@@ -187,7 +187,7 @@ export default function Learning() {
             <p className="text-indigo-100 mb-6">
               Complete the quiz on the right to verify your understanding and move on to the next lesson!
             </p>
-            <button className="bg-white text-indigo-600 hover:bg-gray-100 font-semibold px-6 py-2 rounded-md">
+            <button className="bf-btn-interactive bg-white text-indigo-600 hover:bg-gray-100 font-semibold px-6 py-2 rounded-md shadow-sm">
               → Start Quiz
             </button>
           </div>
@@ -244,13 +244,13 @@ export default function Learning() {
             <p className="text-sm text-muted-foreground mb-6">Select the best answer below.</p>
 
             <div className="space-y-3">
-              <button className="w-full text-left p-4 rounded-lg border-2 border-border bg-card hover:border-indigo-400 transition-all">
+              <button className="bf-btn-interactive w-full text-left p-4 rounded-lg border-2 border-border bg-card hover:border-indigo-400 hover:shadow-sm">
                 <div className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center flex-shrink-0 mt-0.5" />
                   <span className="font-medium text-foreground">Government Bonds</span>
                 </div>
               </button>
-              <button className="w-full text-left p-4 rounded-lg border-2 border-emerald-500 bg-emerald-50 hover:border-indigo-400 transition-all">
+              <button className="bf-btn-interactive w-full text-left p-4 rounded-lg border-2 border-emerald-500 bg-emerald-50 hover:border-indigo-400 hover:shadow-sm">
                 <div className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full border-2 border-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <div className="w-3 h-3 rounded-full bg-emerald-500" />
@@ -269,13 +269,13 @@ export default function Learning() {
                   </div>
                 </div>
               </button>
-              <button className="w-full text-left p-4 rounded-lg border-2 border-border bg-card hover:border-indigo-400 transition-all">
+              <button className="bf-btn-interactive w-full text-left p-4 rounded-lg border-2 border-border bg-card hover:border-indigo-400 hover:shadow-sm">
                 <div className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center flex-shrink-0 mt-0.5" />
                   <span className="font-medium text-foreground">Savings Account</span>
                 </div>
               </button>
-              <button className="w-full text-left p-4 rounded-lg border-2 border-border bg-card hover:border-indigo-400 transition-all">
+              <button className="bf-btn-interactive w-full text-left p-4 rounded-lg border-2 border-border bg-card hover:border-indigo-400 hover:shadow-sm">
                 <div className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center flex-shrink-0 mt-0.5" />
                   <span className="font-medium text-foreground">Certificate of Deposit (CD)</span>
@@ -284,10 +284,10 @@ export default function Learning() {
             </div>
 
             <div className="flex items-center justify-between mt-6 pt-6 border-t border-border">
-              <button className="inline-flex items-center text-muted-foreground hover:text-foreground">
+              <button className="bf-btn-interactive inline-flex items-center text-muted-foreground hover:text-foreground">
                 ← Previous
               </button>
-              <button className="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md">
+              <button className="bf-btn-interactive bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md shadow-sm">
                 Next Question →
               </button>
             </div>

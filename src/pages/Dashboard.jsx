@@ -63,14 +63,14 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-3">
           <div className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-100 p-1">
-            <button className="rounded-full bg-white px-4 py-1.5 text-xs font-medium text-indigo-700 shadow-sm">
+            <button className="bf-btn-interactive rounded-full bg-white px-4 py-1.5 text-xs font-medium text-indigo-700 shadow-sm">
               BASIC
             </button>
-            <button className="rounded-full px-4 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-50">
+            <button className="bf-btn-interactive rounded-full px-4 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-50">
               ADVANCED
             </button>
           </div>
-          <button className="h-9 w-9 rounded-full border border-slate-200 bg-white text-slate-500">
+          <button className="bf-btn-interactive h-9 w-9 rounded-full border border-slate-200 bg-white text-slate-500 hover:bg-slate-50">
             🔔
           </button>
         </div>
@@ -91,7 +91,7 @@ export default function Dashboard() {
           </p>
           <Link
             to="/learning"
-            className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2 text-sm font-semibold text-indigo-700 shadow hover:bg-slate-50"
+            className="bf-btn-interactive inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2 text-sm font-semibold text-indigo-700 shadow hover:bg-slate-50"
           >
             Start Today&apos;s Lesson →
           </Link>
@@ -143,7 +143,7 @@ export default function Dashboard() {
           </div>
           <Link
             to="/learning"
-            className="mt-5 block rounded-lg bg-indigo-50 px-4 py-2 text-center text-sm font-semibold text-indigo-600 hover:bg-indigo-100"
+            className="bf-btn-interactive mt-5 block rounded-lg bg-indigo-50 px-4 py-2 text-center text-sm font-semibold text-indigo-600 hover:bg-indigo-100"
           >
             View Full Curriculum
           </Link>
@@ -200,7 +200,7 @@ export default function Dashboard() {
                 )
               )}
             </div>
-            <button className="mt-4 w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white opacity-60">
+            <button className="bf-btn-interactive mt-4 w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white opacity-60 shadow-sm">
               Submit Answer
             </button>
           </div>
@@ -234,13 +234,13 @@ export default function Dashboard() {
             <div className="mt-4 grid grid-cols-2 gap-3">
               <Link
                 to="/trade"
-                className="rounded-lg bg-emerald-500 px-4 py-2 text-center text-sm font-semibold text-white"
+                className="bf-btn-interactive rounded-lg bg-emerald-500 px-4 py-2 text-center text-sm font-semibold text-white shadow-sm"
               >
                 Buy
               </Link>
               <Link
                 to="/trade"
-                className="rounded-lg bg-rose-500 px-4 py-2 text-center text-sm font-semibold text-white"
+                className="bf-btn-interactive rounded-lg bg-rose-500 px-4 py-2 text-center text-sm font-semibold text-white shadow-sm"
               >
                 Sell
               </Link>
@@ -264,7 +264,7 @@ export default function Dashboard() {
             </div>
             <Link
               to="/community"
-              className="mt-4 inline-flex w-full items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              className="bf-btn-interactive mt-4 inline-flex w-full items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
             >
               View All Discussions
             </Link>
