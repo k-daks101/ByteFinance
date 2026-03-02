@@ -1,18 +1,12 @@
 /* Custom Theme Styles */
 /* Add your custom CSS here - you can paste the CSS you provided */
 
-/* Bohuan Personal Font */
+/* Import Bouhan font */
 @font-face {
-  font-family: 'Bohuan Personal';
-  src: url('/fonts/Bohuanpersonal.ttf') format('truetype');
+  font-family: 'Bouhan';
+  src: url('/static/fonts/Bohuanpersonal.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-  font-display: swap;
-}
-
-/* Apply font globally */
-body {
-  font-family: 'Bohuan Personal', ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Example: Typography and base styles */

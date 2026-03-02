@@ -1,19 +1,19 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import AuthContext from "../context/AuthContext";
 
 export default function AuthenticatedRoute() {
-  const { isAuthenticated, loading } = useAuth();
+  const auth = useContext(AuthContext);
 
-  if (loading) {
-    return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
-        <div>Loading...</div>
-      </div>
-    );
+  if (!auth) {
+    return <Navigate to="/login" replace />;
   }
 
-  if (!isAuthenticated) {
+  if (auth.loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!auth.token) {
     return <Navigate to="/login" replace />;
   }
 

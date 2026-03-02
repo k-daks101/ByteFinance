@@ -1,17 +1,30 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import React, { useContext, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { login as loginRequest } from "../api/auth";
 import Button from "../components/Button";
 import FormInput from "../components/FormInput";
 import ThemeToggle from "../components/ThemeToggle";
 import { LogIn } from "lucide-react";
 import ByteFinanceLogo from "../components/ByteFinanceLogo";
+import AuthContext from "../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, loading, error } = useAuth();
+  const location = useLocation();
+  const auth = useContext(AuthContext);
   const [form, setForm] = useState({ email: "", password: "" });
-  const [localError, setLocalError] = useState("");
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    // Display success message from registration
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message);
+      // Clear the message from location state
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -20,22 +33,29 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setLocalError("");
-
-    if (!form.email || !form.password) {
-      setLocalError("Please enter email and password.");
-      return;
-    }
+    setError("");
+    setSubmitting(true);
 
     try {
-      await login(form.email, form.password, false);
+      // API: POST /api/auth/login -> { token | accessToken }
+      const data = await loginRequest({
+        email: form.email,
+        password: form.password,
+      });
+      const token = data?.token || data?.accessToken;
+      if (!token) {
+        throw new Error("Missing token in response.");
+      }
+      auth?.login(token);
       navigate("/dashboard", { replace: true });
     } catch (err) {
       const message =
-        err?.errors?.email?.[0] ||
+        err?.response?.data?.message ||
         err?.message ||
         "Unable to login. Please try again.";
-      setLocalError(message);
+      setError(message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -58,6 +78,11 @@ export default function Login() {
               <ThemeToggle />
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {successMessage && (
+                <div className="p-3 rounded-md border-l-4 border-green-600">
+                  <p className="text-sm text-green-700 dark:text-green-400 font-medium">{successMessage}</p>
+                </div>
+              )}
               <FormInput
                 id="email"
                 name="email"
@@ -74,16 +99,14 @@ export default function Login() {
                 value={form.password}
                 onChange={handleChange}
               />
-              {(error || localError) && (
-                <p className="text-sm text-red-600">{error || localError}</p>
-              )}
+              {error && <p className="text-sm text-red-600">{error}</p>}
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={submitting}
                 variant="secondary"
                 className="w-full"
               >
-                {loading ? "Signing in..." : "Sign in"}
+                {submitting ? "Signing in..." : "Sign in"}
               </Button>
             </form>
             <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">

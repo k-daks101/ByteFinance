@@ -48,7 +48,7 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          '"Bohuan Personal"',
+          "Bouhan",
           "ui-sans-serif",
           "system-ui",
           "sans-serif",

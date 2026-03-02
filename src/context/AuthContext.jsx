@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from "react";
-import { getMe } from "../api/auth";
+import { getMe, logout as logoutRequest } from "../api/auth";
 
 const AuthContext = createContext(null);
 
@@ -34,11 +34,21 @@ export const AuthProvider = ({ children }) => {
     setToken(jwt);
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    setToken(null);
-    setUser(null);
-  }, []);
+  const logout = useCallback(async () => {
+    try {
+      // Call API to invalidate token on server
+      if (token) {
+        await logoutRequest();
+      }
+    } catch (error) {
+      // Even if API fails, still logout locally
+      console.error('Logout error:', error);
+    } finally {
+      localStorage.removeItem(TOKEN_KEY);
+      setToken(null);
+      setUser(null);
+    }
+  }, [token]);
 
   const value = useMemo(
     () => ({

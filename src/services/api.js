@@ -1,11 +1,13 @@
-import axios from 'axios';
+import axios from "axios";
 
 // API Base URL - uses environment variable or defaults to localhost
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";
 
-const TOKEN_KEY = 'auth_token';
+const TOKEN_KEY = "auth_token";
 
 export const getStoredToken = () => localStorage.getItem(TOKEN_KEY);
+
 export const setStoredToken = (token) => {
   if (token) {
     localStorage.setItem(TOKEN_KEY, token);
@@ -13,6 +15,7 @@ export const setStoredToken = (token) => {
     localStorage.removeItem(TOKEN_KEY);
   }
 };
+
 export const clearStoredToken = () => localStorage.removeItem(TOKEN_KEY);
 
 // Create axios instance with default config
@@ -20,8 +23,8 @@ const apiClient = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
   headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
+    Accept: "application/json",
+    "Content-Type": "application/json",
   },
 });
 
@@ -41,9 +44,7 @@ apiClient.interceptors.request.use(
 
 // Response interceptor: clear token on 401
 apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
     if (error.response?.status === 401) {
       clearStoredToken();
@@ -52,24 +53,26 @@ apiClient.interceptors.response.use(
   }
 );
 
-// CSRF Cookie (only needed for cookie/session auth; we use token auth)
+// Helper to get backend base (for CSRF, if needed)
 const getBackendBase = () => {
-  const base = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000';
-  return base.replace(/\/$/, '');
+  const base =
+    import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+  return base.replace(/\/$/, "");
 };
+
 export const setupCSRF = async () => {
   try {
     await axios.get(`${getBackendBase()}/sanctum/csrf-cookie`, {
       withCredentials: true,
     });
   } catch (error) {
-    console.error('Failed to fetch CSRF cookie:', error);
+    console.error("Failed to fetch CSRF cookie:", error);
   }
 };
 
-// API methods
+// Convenience API methods
 export const api = {
-  // GET request
+  // GET
   get: async (endpoint, config = {}) => {
     try {
       const response = await apiClient.get(endpoint, config);
@@ -79,7 +82,7 @@ export const api = {
     }
   },
 
-  // POST request
+  // POST
   post: async (endpoint, data = {}, config = {}) => {
     try {
       const response = await apiClient.post(endpoint, data, config);
@@ -89,7 +92,7 @@ export const api = {
     }
   },
 
-  // PUT request
+  // PUT
   put: async (endpoint, data = {}, config = {}) => {
     try {
       const response = await apiClient.put(endpoint, data, config);
@@ -99,7 +102,7 @@ export const api = {
     }
   },
 
-  // DELETE request
+  // DELETE
   delete: async (endpoint, config = {}) => {
     try {
       const response = await apiClient.delete(endpoint, config);
@@ -109,7 +112,7 @@ export const api = {
     }
   },
 
-  // PATCH request
+  // PATCH
   patch: async (endpoint, data = {}, config = {}) => {
     try {
       const response = await apiClient.patch(endpoint, data, config);
@@ -121,3 +124,4 @@ export const api = {
 };
 
 export default apiClient;
+

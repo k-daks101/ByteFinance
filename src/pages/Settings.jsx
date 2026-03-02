@@ -109,8 +109,8 @@ export default function Settings() {
               onClick={() => setActiveSection(id)}
               className={`flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors whitespace-nowrap ${
                 activeSection === id
-                  ? "bg-indigo-600 text-white"
-                  : "text-muted-foreground hover:bg-slate-100 hover:text-foreground dark:hover:bg-slate-800"
+                  ? "bg-emerald-600 text-white"
+                  : "text-muted-foreground hover:bg-slate-100 hover:text-foreground light:hover:bg-slate-800 dark:hover:text-foreground"
               }`}
             >
               <Icon className="h-4 w-4 shrink-0" />
@@ -142,7 +142,7 @@ export default function Settings() {
                         <User className="h-12 w-12 text-slate-400" />
                       )}
                     </div>
-                    <label className="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-indigo-600 text-white shadow hover:bg-indigo-700">
+                    <label className="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-emerald-500 text-white shadow hover:bg-slate-100 hover:text-emerald-600">
                       <Camera className="h-4 w-4" />
                       <input
                         type="file"
@@ -167,7 +167,7 @@ export default function Settings() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Your name"
-                      className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                     />
                   </label>
                   <label className="block">
@@ -180,7 +180,7 @@ export default function Settings() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
-                      className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                     />
                   </label>
                   <label className="block">
@@ -193,7 +193,7 @@ export default function Settings() {
                       onChange={(e) => setBio(e.target.value)}
                       placeholder="A short bio..."
                       rows={3}
-                      className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
+                      className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
                     />
                   </label>
                 </div>
@@ -216,7 +216,7 @@ export default function Settings() {
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="mt-1 w-full max-w-xs rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="mt-1 w-full max-w-xs rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   >
                     <option value="GHS">GHS</option>
                     <option value="USD">USD</option>
@@ -231,7 +231,7 @@ export default function Settings() {
                   <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
-                    className="mt-1 w-full max-w-xs rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="mt-1 w-full max-w-xs rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   >
                     <option value="en">English</option>
                     <option value="fr">French</option>
@@ -249,7 +249,7 @@ export default function Settings() {
                     aria-checked={darkMode}
                     onClick={() => handleDarkModeToggle(!darkMode)}
                     className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-                      darkMode ? "bg-indigo-600" : "bg-slate-200 dark:bg-slate-700"
+                      darkMode ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-700"
                     }`}
                   >
                     <span
@@ -281,7 +281,7 @@ export default function Settings() {
                     value={monthlySavings}
                     onChange={(e) => setMonthlySavings(e.target.value)}
                     placeholder="e.g. 500"
-                    className="mt-1 w-full max-w-xs rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="mt-1 w-full max-w-xs rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
                 </label>
                 <label className="block">
@@ -295,7 +295,7 @@ export default function Settings() {
                     value={budgetAlertThreshold}
                     onChange={(e) => setBudgetAlertThreshold(e.target.value)}
                     placeholder="e.g. 80% of budget"
-                    className="mt-1 w-full max-w-xs rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="mt-1 w-full max-w-xs rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
                   <p className="mt-1 text-xs text-muted-foreground">
                     Get notified when spending approaches this limit.
@@ -319,7 +319,7 @@ export default function Settings() {
                   </span>
                   <button
                     type="button"
-                    className="bf-btn-interactive shrink-0 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+                    className="bf-btn-interactive shrink-0 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-slate-100 hover:text-foreground dark:hover:bg-slate-800 dark:hover:text-foreground"
                   >
                     Change Password
                   </button>
@@ -336,7 +336,7 @@ export default function Settings() {
                     onClick={() => setTwoFactorEnabled((v) => !v)}
                     className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
                       twoFactorEnabled
-                        ? "bg-indigo-600"
+                        ? "bg-emerald-500"
                         : "bg-slate-200 dark:bg-slate-700"
                     }`}
                   >
@@ -388,7 +388,7 @@ export default function Settings() {
                             type="checkbox"
                             checked={emailLargeTx}
                             onChange={(e) => setEmailLargeTx(e.target.checked)}
-                            className="h-4 w-4 rounded border-border text-indigo-600 focus:ring-indigo-500"
+                            className="h-4 w-4 rounded border-border text-emerald-600 focus:ring-emerald-500"
                           />
                         </td>
                         <td className="py-3">
@@ -398,7 +398,7 @@ export default function Settings() {
                             onChange={(e) =>
                               setEmailWeeklyReport(e.target.checked)
                             }
-                            className="h-4 w-4 rounded border-border text-indigo-600 focus:ring-indigo-500"
+                            className="h-4 w-4 rounded border-border text-emerald-600 focus:ring-emerald-500"
                           />
                         </td>
                       </tr>
@@ -412,7 +412,7 @@ export default function Settings() {
                             type="checkbox"
                             checked={smsLargeTx}
                             onChange={(e) => setSmsLargeTx(e.target.checked)}
-                            className="h-4 w-4 rounded border-border text-indigo-600 focus:ring-indigo-500"
+                            className="h-4 w-4 rounded border-border text-emerald-600 focus:ring-emerald-500"
                           />
                         </td>
                         <td className="py-3">
@@ -422,7 +422,7 @@ export default function Settings() {
                             onChange={(e) =>
                               setSmsWeeklyReport(e.target.checked)
                             }
-                            className="h-4 w-4 rounded border-border text-indigo-600 focus:ring-indigo-500"
+                            className="h-4 w-4 rounded border-border text-emerald-600 focus:ring-emerald-500"
                           />
                         </td>
                       </tr>
@@ -436,7 +436,7 @@ export default function Settings() {
                             type="checkbox"
                             checked={pushLargeTx}
                             onChange={(e) => setPushLargeTx(e.target.checked)}
-                            className="h-4 w-4 rounded border-border text-indigo-600 focus:ring-indigo-500"
+                            className="h-4 w-4 rounded border-border text-emerald-600 focus:ring-emerald-500"
                           />
                         </td>
                         <td className="py-3">
@@ -446,7 +446,7 @@ export default function Settings() {
                             onChange={(e) =>
                               setPushWeeklyReport(e.target.checked)
                             }
-                            className="h-4 w-4 rounded border-border text-indigo-600 focus:ring-indigo-500"
+                            className="h-4 w-4 rounded border-border text-emerald-600 focus:ring-emerald-500"
                           />
                         </td>
                       </tr>
@@ -469,7 +469,7 @@ export default function Settings() {
         <button
           type="button"
           onClick={handleSave}
-          className="bf-btn-interactive inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700"
+          className="bf-btn-interactive inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-100 hover:text-emerald-700"
         >
           <Save className="h-4 w-4" />
           {saved ? "Saved!" : "Save Changes"}

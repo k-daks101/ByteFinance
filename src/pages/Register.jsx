@@ -1,22 +1,19 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { register as registerRequest } from "../api/auth";
 import Button from "../components/Button";
 import FormInput from "../components/FormInput";
 import ThemeToggle from "../components/ThemeToggle";
 import { UserPlus } from "lucide-react";
 import ByteFinanceLogo from "../components/ByteFinanceLogo";
+import AuthContext from "../context/AuthContext";
 
 export default function Register() {
   const navigate = useNavigate();
-  const { register: registerUser, loading, error } = useAuth();
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    passwordConfirmation: "",
-  });
-  const [localError, setLocalError] = useState("");
+  const auth = useContext(AuthContext);
+  const [form, setForm] = useState({ name: "", email: "", password: "", password_confirmation: "" });
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -25,31 +22,50 @@ export default function Register() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setLocalError("");
+    setError("");
 
-    if (form.password !== form.passwordConfirmation) {
-      setLocalError("Passwords do not match.");
+    // Validate password confirmation
+    if (form.password !== form.password_confirmation) {
+      setError("Passwords do not match");
       return;
     }
+
     if (form.password.length < 8) {
-      setLocalError("Password must be at least 8 characters.");
+      setError("Password must be at least 8 characters");
       return;
     }
+
+    // Check for special character
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    if (!specialCharRegex.test(form.password)) {
+      setError("Password must include at least one special character (!@#$%^&*(),.?\":{}|<>)");
+      return;
+    }
+
+    setSubmitting(true);
 
     try {
-      await registerUser({
+      // API: POST /api/register -> { token, user }
+      await registerRequest({
         name: form.name,
         email: form.email,
         password: form.password,
-        passwordConfirmation: form.passwordConfirmation,
+        password_confirmation: form.password_confirmation,
       });
-      navigate("/dashboard", { replace: true });
+      
+      // Redirect to login page after successful registration
+      navigate("/login", { 
+        replace: true,
+        state: { message: "Account created successfully! Please login." }
+      });
     } catch (err) {
       const message =
-        err?.errors?.email?.[0] ||
+        err?.response?.data?.message ||
         err?.message ||
         "Unable to register. Please try again.";
-      setLocalError(message);
+      setError(message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -92,28 +108,29 @@ export default function Register() {
                 id="password"
                 name="password"
                 type="password"
-                label="Password (min 8 characters)"
+                label="Password"
                 value={form.password}
                 onChange={handleChange}
               />
+              <p className="text-xs text-slate-500 dark:text-slate-400 -mt-2">
+                Must be at least 8 characters and include a special character
+              </p>
               <FormInput
-                id="passwordConfirmation"
-                name="passwordConfirmation"
+                id="password_confirmation"
+                name="password_confirmation"
                 type="password"
-                label="Confirm password"
-                value={form.passwordConfirmation}
+                label="Confirm Password"
+                value={form.password_confirmation}
                 onChange={handleChange}
               />
-              {(error || localError) && (
-                <p className="text-sm text-red-600">{error || localError}</p>
-              )}
+              {error && <p className="text-sm text-red-600">{error}</p>}
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={submitting}
                 variant="secondary"
                 className="w-full"
               >
-                {loading ? "Creating account..." : "Create account"}
+                {submitting ? "Creating account..." : "Create account"}
               </Button>
             </form>
             <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
