@@ -9,12 +9,36 @@ export default function Market() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [dailyBrief, setDailyBrief] = useState(null);
+  const [dailyBriefLoading, setDailyBriefLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
 
     const fetchInstruments = async () => {
+      if (isMounted) {
+        setDailyBriefLoading(true);
+      }
+
       try {
+        const brief = await api.get("/daily-brief").catch(() => null);
+
+        if (isMounted) {
+          setDailyBrief(
+            brief
+              ? {
+                  summary: brief.summary_text || "Market is active today.",
+                  sentiment: brief.sentiment || "Neutral",
+                  date: brief.insight_date || null,
+                }
+              : {
+                  summary: "Daily AI Market Brief is temporarily unavailable.",
+                  sentiment: "Neutral",
+                  date: null,
+                }
+          );
+        }
+
         // Try backend API first
         const data = await api.get("/instruments");
         if (isMounted) {
@@ -47,6 +71,7 @@ export default function Market() {
       } finally {
         if (isMounted) {
           setLoading(false);
+          setDailyBriefLoading(false);
         }
       }
     };
@@ -85,6 +110,30 @@ export default function Market() {
       </header>
 
       <section className="bf-card p-6 space-y-4">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <h2 className="text-base font-bold text-slate-900">Daily AI Market Brief</h2>
+            {dailyBrief?.sentiment && (
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                  dailyBrief.sentiment === "Bullish"
+                    ? "bg-emerald-100 text-emerald-700"
+                    : dailyBrief.sentiment === "Bearish"
+                      ? "bg-rose-100 text-rose-700"
+                      : "bg-slate-200 text-slate-700"
+                }`}
+              >
+                {dailyBrief.sentiment}
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-slate-600">
+            {dailyBriefLoading
+              ? "Loading daily brief..."
+              : dailyBrief?.summary || "No brief available."}
+          </p>
+        </div>
+
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1">
             <label htmlFor="search" className="text-sm text-slate-600">

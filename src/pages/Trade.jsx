@@ -23,6 +23,8 @@ export default function Trade() {
   const [portfolio, setPortfolio] = useState(null);
   const [instruments, setInstruments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dailyBrief, setDailyBrief] = useState(null);
+  const [dailyBriefLoading, setDailyBriefLoading] = useState(true);
   const [stats, setStats] = useState({
     virtualBalance: "Ⓥ 0.00",
     openPositions: 0,
@@ -46,13 +48,33 @@ export default function Trade() {
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {
+      if (isMounted) {
+        setDailyBriefLoading(true);
+      }
+
       try {
         // Fetch watchlist (or use instruments if no watchlist endpoint)
         const watchlistData = await api.get("/watchlist").catch(() => null);
         const portfolioData = await api.get("/portfolio").catch(() => null);
         const instrumentsData = await api.get("/instruments").catch(() => null);
+        const dailyBriefData = await api.get("/daily-brief").catch(() => null);
 
         if (isMounted) {
+          // Set daily AI market brief
+          if (dailyBriefData) {
+            setDailyBrief({
+              summary: dailyBriefData.summary_text || "Market is active today.",
+              sentiment: dailyBriefData.sentiment || "Neutral",
+              date: dailyBriefData.insight_date || null,
+            });
+          } else {
+            setDailyBrief({
+              summary: "Daily AI Market Brief is temporarily unavailable.",
+              sentiment: "Neutral",
+              date: null,
+            });
+          }
+
           // Set watchlist (use instruments if no watchlist endpoint exists)
           if (watchlistData && Array.isArray(watchlistData)) {
             setWatchlist(watchlistData);
@@ -125,6 +147,7 @@ export default function Trade() {
       } finally {
         if (isMounted) {
           setLoading(false);
+          setDailyBriefLoading(false);
         }
       }
     };
@@ -238,12 +261,34 @@ export default function Trade() {
         </div>
       </section>
 
+      <section className="bf-card p-5 space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-base font-bold text-slate-900">Daily AI Market Brief</h2>
+          {dailyBrief?.sentiment && (
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                dailyBrief.sentiment === "Bullish"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : dailyBrief.sentiment === "Bearish"
+                    ? "bg-rose-100 text-rose-700"
+                    : "bg-slate-100 text-slate-700"
+              }`}
+            >
+              {dailyBrief.sentiment}
+            </span>
+          )}
+        </div>
+        <p className="text-sm text-slate-600">
+          {dailyBriefLoading ? "Loading daily brief..." : dailyBrief?.summary || "No brief available."}
+        </p>
+      </section>
+
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: "Virtual Balance", value: "Ⓥ 10,000.00", tone: "text-amber-700" },
-          { label: "Open Positions", value: "3", tone: "text-slate-700" },
-          { label: "Today’s P/L", value: "+1.2%", tone: "text-emerald-600" },
-          { label: "Risk Level", value: "Low", tone: "text-indigo-600" },
+          { label: "Virtual Balance", value: stats.virtualBalance, tone: "text-amber-700" },
+          { label: "Open Positions", value: stats.openPositions.toString(), tone: "text-slate-700" },
+          { label: "Today's P/L", value: stats.todayPL, tone: "text-emerald-600" },
+          { label: "Risk Level", value: stats.riskLevel, tone: "text-indigo-600" },
         ].map((stat) => (
           <div
             key={stat.label}

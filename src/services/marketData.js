@@ -127,6 +127,25 @@ export const getFinnhubQuote = async (symbol) => {
  * @returns {Promise<Object[]>} Array of quote data
  */
 export const getBatchQuotes = async (symbols, provider = 'alphavantage') => {
+  // Check if any API keys are configured
+  const hasAPIKey = ALPHA_VANTAGE_API_KEY || IEX_API_KEY || FINNHUB_API_KEY;
+  
+  if (!hasAPIKey) {
+    console.warn('No market data API keys configured. Returning mock data.');
+    // Return mock data when no API keys are available
+    return symbols.map(symbol => ({
+      symbol: symbol,
+      price: Math.random() * 1000 + 100,
+      change: (Math.random() * 10 - 5).toFixed(2),
+      changePercent: `${(Math.random() * 10 - 5).toFixed(2)}%`,
+      volume: Math.floor(Math.random() * 10000000),
+      high: Math.random() * 1000 + 100,
+      low: Math.random() * 1000 + 50,
+      open: Math.random() * 1000 + 100,
+      previousClose: Math.random() * 1000 + 100,
+    }));
+  }
+
   const quotes = await Promise.all(
     symbols.map(async (symbol) => {
       try {
