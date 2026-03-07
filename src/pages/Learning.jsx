@@ -89,6 +89,12 @@ const LESSON_QUIZZES = {
   ],
 };
 
+const LESSON_KEY_ALIASES = {
+  "stocks-v-bonds": "investing-basics",
+  "stocks-vs-bonds": "investing-basics",
+  "inbvesting-basics": "investing-basics",
+};
+
 export default function Learning() {
   const [searchParams] = useSearchParams();
   const [selectedLesson, setSelectedLesson] = useState("modern-money");
@@ -171,9 +177,10 @@ export default function Learning() {
 
   useEffect(() => {
     const lessonFromUrl = searchParams.get("lesson");
+    const normalizedLesson = LESSON_KEY_ALIASES[lessonFromUrl] || lessonFromUrl;
 
-    if (lessonFromUrl && LESSON_QUIZZES[lessonFromUrl] && lessonFromUrl !== selectedLesson) {
-      setSelectedLesson(lessonFromUrl);
+    if (normalizedLesson && LESSON_QUIZZES[normalizedLesson] && normalizedLesson !== selectedLesson) {
+      setSelectedLesson(normalizedLesson);
     }
   }, [searchParams, selectedLesson]);
 
@@ -338,7 +345,7 @@ export default function Learning() {
   return (
     <div className="space-y-8">
       {/* Lesson Selection Tabs */}
-      <div className="flex gap-4 border-b border-slate-200">
+      <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-1">
         <button
           onClick={() => setSelectedLesson("modern-money")}
           className={`px-4 py-3 font-semibold text-sm border-b-2 transition-colors ${
@@ -351,13 +358,13 @@ export default function Learning() {
         </button>
         <button
           onClick={() => setSelectedLesson("investing-basics")}
-          className={`px-4 py-3 font-semibold text-sm border-b-2 transition-colors ${
+          className={`px-4 py-3 font-semibold text-sm border-b-2 transition-colors whitespace-nowrap ${
             selectedLesson === "investing-basics"
               ? "border-indigo-600 text-indigo-600"
               : "border-transparent text-slate-600 hover:text-slate-900"
           }`}
         >
-          Investing Basics: Stocks vs. Bonds
+          Investing Basics: Stocks v Bonds
         </button>
       </div>
 
@@ -580,7 +587,7 @@ export default function Learning() {
 
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-3">
-              Understanding Stocks vs. Bonds
+              Understanding Stocks v Bonds
             </h1>
             <p className="text-muted-foreground leading-relaxed">
               Learn the fundamental differences between equity and debt investments, and discover how to build a balanced

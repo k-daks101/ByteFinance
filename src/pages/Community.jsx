@@ -34,16 +34,32 @@ export default function Community() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {[
-                "Budgeting for Students",
-                "Crypto vs Stocks",
-                "First Credit Card Tips",
-                "Emergency Fund Goals",
+                {
+                  title: "Budgeting for Students",
+                  description: "Learn how to manage your money on a tight budget. Tips for tracking expenses, cutting costs, and making your student loans work for you."
+                },
+                {
+                  title: "Crypto vs Stocks",
+                  description: "Understand the differences between cryptocurrency and traditional stock investments. Compare risk levels, volatility, and long-term growth potential."
+                },
+                {
+                  title: "First Credit Card Tips",
+                  description: "Essential advice for building credit responsibly. Learn about APR, credit utilization, payment strategies, and avoiding common pitfalls."
+                },
+                {
+                  title: "Emergency Fund Goals",
+                  description: "Discover how much you should save for emergencies and the best strategies to build your safety net. Recommended: 3-6 months of expenses."
+                },
               ].map((item) => (
                 <div
-                  key={item}
-                  className="rounded-lg border border-border bg-slate-50 px-4 py-3 text-sm text-foreground bf-card-hover"
+                  key={item.title}
+                  className="group relative rounded-lg border border-border bg-slate-50 px-4 py-3 text-sm text-foreground bf-card-hover cursor-pointer"
                 >
-                  {item}
+                  {item.title}
+                  <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-64 -translate-x-1/2 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-700 shadow-lg group-hover:block">
+                    <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-slate-200 bg-white"></div>
+                    {item.description}
+                  </div>
                 </div>
               ))}
             </div>

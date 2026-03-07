@@ -170,7 +170,7 @@ export default function Dashboard() {
     {
       id: 2,
       lessonKey: "investing-basics",
-      title: "Investing Basics: Stocks vs. Bonds",
+      title: "Investing Basics: Stocks v Bonds",
       description: "Discover the fundamental differences between stocks and bonds, understand risk vs. reward, and learn how to build a balanced portfolio.",
       duration: "20 min",
       icon: TrendingUp,
@@ -294,59 +294,24 @@ export default function Dashboard() {
     }
   ];
 
-  // Community Posts with Answers
-  const communityPosts = [
+  // Frequently Asked Questions
+  const faqItems = [
     {
       id: 1,
       question: "How do I start an IRA at 18?",
-      author: "Sarah M.",
-      replies: 12,
-      timeAgo: "2 hours ago",
       answers: [
-        {
-          author: "James T.",
-          authorLevel: "Investment Explorer",
-          content: "Starting an IRA at 18 is a smart move! You have two main options: Traditional IRA (tax-deductible contributions) or Roth IRA (tax-free withdrawals in retirement). At your age, a Roth IRA is often better because you're likely in a lower tax bracket now.",
-          likes: 24,
-          timeAgo: "1 hour ago"
-        },
-        {
-          author: "Emily R.",
-          authorLevel: "Portfolio Mastery",
-          content: "Great advice from James! Also, make sure you have earned income - that's required to contribute to an IRA. You can open one through brokers like Fidelity, Vanguard, or Charles Schwab. Start with low-cost index funds!",
-          likes: 18,
-          timeAgo: "45 min ago"
-        },
-        {
-          author: "Michael B.",
-          authorLevel: "Financial Navigator",
-          content: "Don't forget: the contribution limit for 2026 is $7,000. Even if you can only contribute $50/month, that's $600/year and will grow significantly over decades thanks to compound interest!",
-          likes: 15,
-          timeAgo: "30 min ago"
-        }
+        "You can usually choose between a Traditional IRA and a Roth IRA. Many beginners at a lower tax bracket prefer Roth for potential tax-free withdrawals later.",
+        "You need earned income to contribute to an IRA. Open one through a brokerage and start with diversified, low-cost index funds.",
+        "Small, consistent contributions can still compound meaningfully over time."
       ]
     },
     {
       id: 2,
       question: "Student loans vs Investing?",
-      author: "Mike T.",
-      replies: 8,
-      timeAgo: "5 hours ago",
       answers: [
-        {
-          author: "Rachel K.",
-          authorLevel: "Portfolio Mastery",
-          content: "It depends on your interest rate! If your student loans are above 6-7%, prioritize paying them off first. If they're lower (like 3-4%), you might benefit more from investing that money instead since the stock market averages 7-10% returns.",
-          likes: 32,
-          timeAgo: "4 hours ago"
-        },
-        {
-          author: "David L.",
-          authorLevel: "Investment Explorer",
-          content: "I recommend a balanced approach: make minimum loan payments while investing at least enough in your 401(k) to get the full employer match (that's free money!). Then use extra funds to either pay down high-interest loans or invest.",
-          likes: 21,
-          timeAgo: "3 hours ago"
-        }
+        "A practical rule: prioritize faster repayment when debt interest is high, and prioritize investing more when debt interest is relatively low.",
+        "A balanced strategy is to make required loan payments while still capturing employer retirement match if available.",
+        "Review your cash flow and risk tolerance before deciding how aggressive to be on either side."
       ]
     }
   ];
@@ -949,10 +914,10 @@ export default function Dashboard() {
           <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <Users className="h-5 w-5 text-indigo-600" />
-              <h3 className="text-lg font-bold text-slate-900">Community</h3>
+              <h3 className="text-lg font-bold text-slate-900">Frequently Asked Questions</h3>
             </div>
             <div className="space-y-4">
-              {communityPosts.map((post) => {
+              {faqItems.map((post) => {
                 const isExpanded = expandedCommunityPost === post.id;
                 
                 return (
@@ -966,11 +931,7 @@ export default function Dashboard() {
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-slate-900">{post.question}</p>
                           <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
-                            <span>Posted by {post.author}</span>
-                            <span>•</span>
-                            <span>{post.replies} replies</span>
-                            <span>•</span>
-                            <span>{post.timeAgo}</span>
+                            <span>{post.answers.length} answers</span>
                           </div>
                         </div>
                         <button className="text-slate-400 hover:text-slate-600 ml-2 flex-shrink-0">
@@ -983,33 +944,14 @@ export default function Dashboard() {
                     {isExpanded && (
                       <div className="border-t border-slate-100 bg-slate-50 p-4">
                         <p className="text-xs font-semibold text-slate-700 mb-3 flex items-center gap-1">
-                          💬 {post.answers.length} Top Answers
+                          {post.answers.length} Suggested Answers
                         </p>
                         <div className="space-y-3">
                           {post.answers.map((answer, idx) => (
                             <div key={idx} className="bg-white rounded-lg p-3 border border-slate-100">
-                              <div className="flex items-start justify-between gap-2 mb-2">
-                                <div className="flex items-center gap-2">
-                                  <div className="h-7 w-7 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-semibold text-indigo-700">
-                                    {answer.author[0]}
-                                  </div>
-                                  <div>
-                                    <p className="text-xs font-semibold text-slate-900">{answer.author}</p>
-                                    <p className="text-xs text-slate-500">{answer.authorLevel}</p>
-                                  </div>
-                                </div>
-                                <span className="text-xs text-slate-400 flex-shrink-0">{answer.timeAgo}</span>
-                              </div>
                               <p className="text-xs text-slate-700 leading-relaxed mb-2">
-                                {answer.content}
+                                {answer}
                               </p>
-                              <div className="flex items-center gap-3 text-xs text-slate-500">
-                                <button className="flex items-center gap-1 hover:text-indigo-600 transition-colors">
-                                  <span>👍</span>
-                                  <span>{answer.likes}</span>
-                                </button>
-                                <button className="hover:text-indigo-600 transition-colors">Reply</button>
-                              </div>
                             </div>
                           ))}
                         </div>
@@ -1017,7 +959,7 @@ export default function Dashboard() {
                           to="/community"
                           className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-700"
                         >
-                          View full discussion
+                          Browse all FAQs
                           <span>→</span>
                         </Link>
                       </div>
@@ -1030,7 +972,7 @@ export default function Dashboard() {
               to="/community"
               className="bf-btn-interactive mt-4 inline-flex w-full items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
             >
-              View All Discussions
+              View All FAQs
             </Link>
           </div>
         </div>
