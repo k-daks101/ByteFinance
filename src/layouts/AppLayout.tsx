@@ -64,8 +64,13 @@ export const AppLayout = (): JSX.Element => {
               Logout
             </button>
             {auth?.user && (
-              <div className="px-3 py-2 text-xs text-indigo-200/80">
-                {auth.user.name || auth.user.email}
+              <div className="px-3 py-2">
+                <p className="text-sm font-bold text-white">
+                  {auth.user.name || auth.user.email}
+                </p>
+                <p className="mt-1 text-xs text-indigo-200/80 leading-relaxed">
+                  {auth.user.bio?.trim() || "No bio added yet."}
+                </p>
               </div>
             )}
           </div>

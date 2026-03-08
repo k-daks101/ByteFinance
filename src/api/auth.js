@@ -10,6 +10,11 @@ export const login = async (payload) => {
   return data;
 };
 
+export const verifyTwoFactor = async (payload) => {
+  const { data } = await axiosInstance.post("/api/two-factor/verify", payload);
+  return data;
+};
+
 export const getMe = async () => {
   const { data } = await axiosInstance.get("/api/user");
   return data.user;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   User,
   Sliders,
@@ -17,6 +17,8 @@ import {
   Save,
   ChevronRight,
 } from "lucide-react";
+import { api } from "../services/api";
+import AuthContext from "../context/AuthContext";
 
 const SECTIONS = [
   { id: "profile", label: "Profile", Icon: User },
@@ -27,14 +29,18 @@ const SECTIONS = [
 ];
 
 export default function Settings() {
+  const auth = useContext(AuthContext);
   const [activeSection, setActiveSection] = useState("profile");
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   // Profile
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [bio, setBio] = useState("");
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   // Preferences
   const [currency, setCurrency] = useState("GHS");
@@ -47,6 +53,14 @@ export default function Settings() {
 
   // Security
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [twoFactorUpdating, setTwoFactorUpdating] = useState(false);
+  const [securityMessage, setSecurityMessage] = useState("");
+  const [securityError, setSecurityError] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [passwordUpdating, setPasswordUpdating] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
 
   // Notifications
   const [emailLargeTx, setEmailLargeTx] = useState(true);
@@ -64,6 +78,50 @@ export default function Settings() {
     setDarkMode(isDark);
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchUser = async () => {
+      try {
+        const response = await api.get("/user");
+
+        if (!isMounted || !response?.user) {
+          return;
+        }
+
+        setName(response.user.name || "");
+        setEmail(response.user.email || "");
+        setBio(response.user.bio || "");
+        setTwoFactorEnabled(Boolean(response.user.two_factor_enabled));
+        
+        // Set avatar if exists
+        if (response.user.avatar) {
+          const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+          setAvatarPreview(`${backendUrl}/storage/${response.user.avatar}`);
+        }
+
+        // Load notification preferences
+        const prefs = response.user.notification_preference;
+        if (prefs) {
+          setEmailLargeTx(Boolean(prefs.email_large_tx));
+          setEmailWeeklyReport(Boolean(prefs.email_weekly_report));
+          setSmsLargeTx(Boolean(prefs.sms_large_tx));
+          setSmsWeeklyReport(Boolean(prefs.sms_weekly_report));
+          setPushLargeTx(Boolean(prefs.push_large_tx));
+          setPushWeeklyReport(Boolean(prefs.push_weekly_report));
+        }
+      } catch (error) {
+        // Settings page should remain usable even if user endpoint fails.
+      }
+    };
+
+    fetchUser();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleDarkModeToggle = (on) => {
     setDarkMode(on);
     if (typeof document !== "undefined") {
@@ -72,17 +130,135 @@ export default function Settings() {
     }
   };
 
-  const handleAvatarChange = (e) => {
+  const handleAvatarChange = async (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setAvatarPreview(url);
+    if (!file) return;
+
+    setSaveError("");
+
+    // Show preview immediately
+    const url = URL.createObjectURL(file);
+    setAvatarPreview(url);
+
+    // Upload to backend
+    setAvatarUploading(true);
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+      const response = await api.post('/user/avatar', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      // Update preview with actual uploaded URL
+      if (response?.avatar_url) {
+        setAvatarPreview(response.avatar_url);
+      }
+
+      // Keep global auth user in sync for sidebar/profile widgets.
+      await auth?.refreshUser?.();
+      
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error) {
+      setSaveError(error?.message || "Failed to upload avatar.");
+    } finally {
+      setAvatarUploading(false);
     }
   };
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  const handleSave = async () => {
+    setSaveError("");
+    setSaving(true);
+
+    try {
+      await Promise.all([
+        api.patch('/user/profile', {
+          name,
+          email,
+          bio,
+        }),
+        api.patch('/user/notification-preferences', {
+          email_large_tx: emailLargeTx,
+          email_weekly_report: emailWeeklyReport,
+          sms_large_tx: smsLargeTx,
+          sms_weekly_report: smsWeeklyReport,
+          push_large_tx: pushLargeTx,
+          push_weekly_report: pushWeeklyReport,
+        }),
+      ]);
+
+      // Refresh auth context so sidebar reflects updated name/bio immediately.
+      await auth?.refreshUser?.();
+
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error) {
+      const message =
+        error?.errors?.email?.[0] ||
+        error?.errors?.name?.[0] ||
+        error?.errors?.bio?.[0] ||
+        error?.message ||
+        "Unable to save settings right now.";
+      setSaveError(message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    setSecurityMessage("");
+    setSecurityError("");
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      setSecurityError("All password fields are required.");
+      return;
+    }
+
+    setPasswordUpdating(true);
+
+    try {
+      await api.put("/user/password", {
+        current_password: currentPassword,
+        new_password: newPassword,
+        new_password_confirmation: confirmNewPassword,
+      });
+
+      setSecurityMessage("Password changed successfully.");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+      setShowPasswordForm(false);
+    } catch (error) {
+      const fallback = "Unable to change password.";
+      const message =
+        error?.current_password?.[0] ||
+        error?.new_password?.[0] ||
+        error?.message ||
+        fallback;
+      setSecurityError(message);
+    } finally {
+      setPasswordUpdating(false);
+    }
+  };
+
+  const handleToggleTwoFactor = async () => {
+    const nextValue = !twoFactorEnabled;
+    setSecurityMessage("");
+    setSecurityError("");
+    setTwoFactorUpdating(true);
+
+    try {
+      await api.patch("/user/two-factor", { enabled: nextValue });
+      setTwoFactorEnabled(nextValue);
+      setSecurityMessage(nextValue ? "Two-step verification enabled." : "Two-step verification disabled.");
+    } catch (error) {
+      setSecurityError("Unable to update two-step verification right now.");
+    } finally {
+      setTwoFactorUpdating(false);
+    }
   };
 
   return (
@@ -142,13 +318,14 @@ export default function Settings() {
                         <User className="h-12 w-12 text-slate-400" />
                       )}
                     </div>
-                    <label className="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-indigo-500 text-white shadow hover:bg-slate-100 hover:text-indigo-600">
+                    <label className={`absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500 text-white shadow hover:bg-slate-100 hover:text-indigo-600 ${avatarUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
                       <Camera className="h-4 w-4" />
                       <input
                         type="file"
                         accept="image/*"
                         className="sr-only"
                         onChange={handleAvatarChange}
+                        disabled={avatarUploading}
                       />
                     </label>
                   </div>
@@ -319,11 +496,55 @@ export default function Settings() {
                   </span>
                   <button
                     type="button"
+                    onClick={() => {
+                      setShowPasswordForm((prev) => !prev);
+                      setSecurityError("");
+                      setSecurityMessage("");
+                    }}
                     className="bf-btn-interactive shrink-0 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-slate-100 hover:text-foreground dark:hover:bg-slate-800 dark:hover:text-foreground"
                   >
-                    Change Password
+                    {showPasswordForm ? "Cancel" : "Change Password"}
                   </button>
                 </div>
+                {showPasswordForm && (
+                  <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+                    <label className="block">
+                      <span className="text-sm font-medium text-foreground">Current password</span>
+                      <input
+                        type="password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="text-sm font-medium text-foreground">New password</span>
+                      <input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="text-sm font-medium text-foreground">Confirm new password</span>
+                      <input
+                        type="password"
+                        value={confirmNewPassword}
+                        onChange={(e) => setConfirmNewPassword(e.target.value)}
+                        className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleChangePassword}
+                      disabled={passwordUpdating}
+                      className={`bf-btn-interactive rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white ${passwordUpdating ? "opacity-60 cursor-not-allowed" : "hover:bg-slate-100 hover:text-indigo-700"}`}
+                    >
+                      {passwordUpdating ? "Updating..." : "Update Password"}
+                    </button>
+                  </div>
+                )}
                 <div className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3">
                   <span className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <Smartphone className="h-4 w-4 text-slate-500" />
@@ -333,7 +554,8 @@ export default function Settings() {
                     type="button"
                     role="switch"
                     aria-checked={twoFactorEnabled}
-                    onClick={() => setTwoFactorEnabled((v) => !v)}
+                    onClick={handleToggleTwoFactor}
+                    disabled={twoFactorUpdating}
                     className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
                       twoFactorEnabled
                         ? "bg-indigo-500"
@@ -347,6 +569,12 @@ export default function Settings() {
                     />
                   </button>
                 </div>
+                {securityMessage && (
+                  <p className="text-sm font-medium text-emerald-600">{securityMessage}</p>
+                )}
+                {securityError && (
+                  <p className="text-sm font-medium text-rose-600">{securityError}</p>
+                )}
               </div>
             </section>
           )}
@@ -466,13 +694,19 @@ export default function Settings() {
             Your preferences have been saved.
           </p>
         )}
+        {saveError && (
+          <p className="text-sm font-medium text-rose-600 sm:mr-4">
+            {saveError}
+          </p>
+        )}
         <button
           type="button"
           onClick={handleSave}
-          className="bf-btn-interactive inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-100 hover:text-indigo-700"
+          disabled={saving}
+          className={`bf-btn-interactive inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-500 px-6 py-3 text-sm font-semibold text-white shadow-sm ${saving ? "opacity-60 cursor-not-allowed" : "hover:bg-slate-100 hover:text-indigo-700"}`}
         >
           <Save className="h-4 w-4" />
-          {saved ? "Saved!" : "Save Changes"}
+          {saving ? "Saving..." : saved ? "Saved!" : "Save Changes"}
         </button>
       </div>
     </div>
