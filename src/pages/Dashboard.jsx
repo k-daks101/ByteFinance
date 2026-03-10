@@ -407,7 +407,7 @@ export default function Dashboard() {
             The Missing Subject
           </div>
           <h2 className="text-3xl font-bold">
-            Why didn&apos;t they teach this in school?
+            Why didn&apos;t they teach this in school??
           </h2>
           <p className="text-sm text-indigo-100 leading-6">
             Traditional education skips the most important life skill: Financial
