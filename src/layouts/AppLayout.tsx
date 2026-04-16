@@ -13,11 +13,11 @@ import ThemeToggle from "../components/ThemeToggle";
 import ByteFinanceLogo from "../components/ByteFinanceLogo";
 
 const navItems = [
-  { label: "Dashboard", to: "/dashboard", Icon: LayoutDashboard },
-  { label: "Learning", to: "/learning", Icon: GraduationCap },
-  { label: "Trading", to: "/trading", Icon: CandlestickChart },
-  { label: "Community", to: "/community", Icon: Users },
-  { label: "Settings", to: "/settings", Icon: Settings },
+  { label: "Dashboard",    to: "/dashboard",     Icon: LayoutDashboard },
+  { label: "Trading",      to: "/trading",       Icon: CandlestickChart },
+  { label: "Learning",     to: "/learning",      Icon: GraduationCap },
+  { label: "Community",    to: "/community",     Icon: Users },
+  { label: "Settings",     to: "/settings",      Icon: Settings },
 ];
 
 export const AppLayout = (): JSX.Element => {

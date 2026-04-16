@@ -10,13 +10,10 @@ import Dashboard from "../pages/Dashboard";
 import Home from "../pages/Home";
 import Learning from "../pages/Learning";
 import Login from "../pages/Login";
-import Market from "../pages/Market";
 import NotFound from "../pages/NotFound";
-import Portfolio from "../pages/Portfolio";
 import Register from "../pages/Register";
 import Settings from "../pages/Settings";
 import Trade from "../pages/Trade";
-import Transactions from "../pages/Transactions";
 
 export const AppRoutes = (): JSX.Element => {
   return (
@@ -28,11 +25,8 @@ export const AppRoutes = (): JSX.Element => {
       <Route element={<AuthenticatedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/market" element={<Market />} />
           <Route path="/trade" element={<Trade />} />
           <Route path="/trading" element={<Trade />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/transactions" element={<Transactions />} />
           <Route path="/learning" element={<Learning />} />
           <Route path="/community" element={<Community />} />
           <Route path="/settings" element={<Settings />} />

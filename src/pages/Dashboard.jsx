@@ -379,7 +379,7 @@ export default function Dashboard() {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <LayoutDashboard className="h-5 w-5 text-indigo-600" />
-            <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+            <h1 className="bf-heading-page">Dashboard</h1>
           </div>
           <p className="text-sm text-slate-500">
             Welcome back. Ready to master your money?
@@ -406,7 +406,7 @@ export default function Dashboard() {
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
             The Missing Subject
           </div>
-          <h2 className="text-3xl font-bold">
+          <h2 className="bf-heading-hero">
             Why didn&apos;t they teach this in school??
           </h2>
           <p className="text-sm text-indigo-100 leading-6">
@@ -425,7 +425,7 @@ export default function Dashboard() {
       <section className="bf-card p-6">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h2 className="text-xl font-bold text-slate-900">Daily AI Market Brief</h2>
+            <h2 className="bf-heading-section">Daily AI Market Brief</h2>
             <p className="text-sm text-slate-500">
               {aiBrief?.is_mock 
                 ? "Demo data - Start backend to see live AI insights" 
@@ -536,7 +536,7 @@ export default function Dashboard() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <p className="text-sm font-medium text-slate-500">{card.title}</p>
-                    <p className="mt-3 text-2xl font-bold text-slate-900">{card.value}</p>
+                    <p className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">{card.value}</p>
                     <p className="mt-2 text-xs text-slate-400">{card.note}</p>
                   </div>
                   <div className={`${card.iconBg} ${card.iconColor} rounded-lg p-2.5`}>
@@ -550,7 +550,7 @@ export default function Dashboard() {
 
         <div className="bf-card p-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-slate-900">Financial Literacy</h3>
+            <h3 className="bf-heading-subsection">Financial Literacy</h3>
             <span className="text-sm text-indigo-600">Level {currentLevel}</span>
           </div>
           
@@ -608,7 +608,7 @@ export default function Dashboard() {
                 <BookOpen className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-900">The Learning Lab</h2>
+                <h2 className="bf-heading-section">The Learning Lab</h2>
                 <p className="text-xs text-slate-500">Master financial literacy step by step</p>
               </div>
             </div>
@@ -641,7 +641,7 @@ export default function Dashboard() {
                   </div>
 
                   {/* Content */}
-                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                  <h3 className="bf-heading-card group-hover:text-indigo-600 transition-colors">
                     {lesson.title}
                   </h3>
                   <p className="mt-2 text-sm text-slate-500 leading-relaxed">
@@ -721,7 +721,7 @@ export default function Dashboard() {
             {!quizCompleted ? (
               <>
                 <div className="flex items-center justify-between">
-                  <h3 className="text-base font-bold text-slate-900">
+                  <h3 className="bf-heading-subsection">
                     Financial Literacy Quiz
                   </h3>
                   <span className="text-xs text-slate-500">
@@ -794,7 +794,7 @@ export default function Dashboard() {
                 <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 mb-4">
                   <Award className="h-8 w-8 text-indigo-600" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">Quiz Completed!</h3>
+                <h3 className="bf-heading-section">Quiz Completed!</h3>
                 <p className="mt-2 text-sm text-slate-600">
                   You've completed the Financial Literacy Quiz
                 </p>
@@ -851,7 +851,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <LineChart className="h-5 w-5 text-indigo-600" />
-                <h3 className="text-lg font-bold text-slate-900">Market Simulator</h3>
+                <h3 className="bf-heading-subsection">Market Simulator</h3>
               </div>
               <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs text-indigo-700">
                 SAFE MODE
@@ -914,7 +914,7 @@ export default function Dashboard() {
           <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <Users className="h-5 w-5 text-indigo-600" />
-              <h3 className="text-lg font-bold text-slate-900">Frequently Asked Questions</h3>
+              <h3 className="bf-heading-subsection">Frequently Asked Questions</h3>
             </div>
             <div className="space-y-4">
               {faqItems.map((post) => {

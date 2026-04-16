@@ -19,11 +19,31 @@
   }
 
   .bf-section-title {
-    @apply text-lg font-semibold text-foreground;
+    @apply text-lg font-semibold tracking-tight text-foreground;
   }
 
   .bf-kicker {
     @apply text-xs uppercase tracking-widest text-muted-foreground;
+  }
+
+  .bf-heading-page {
+    @apply text-2xl font-semibold tracking-tight text-foreground sm:text-3xl;
+  }
+
+  .bf-heading-hero {
+    @apply text-3xl font-semibold tracking-tight text-white sm:text-4xl;
+  }
+
+  .bf-heading-section {
+    @apply text-xl font-semibold tracking-tight text-foreground;
+  }
+
+  .bf-heading-subsection {
+    @apply text-lg font-semibold tracking-tight text-foreground;
+  }
+
+  .bf-heading-card {
+    @apply text-base font-semibold tracking-tight text-foreground;
   }
 
   .bf-divider {
@@ -230,8 +250,48 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-sans tracking-tight text-foreground;
+  }
+
+  h1 {
+    @apply text-3xl font-semibold leading-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold leading-tight;
+  }
+
+  h3 {
+    @apply text-xl font-semibold leading-snug;
+  }
+
+  h4 {
+    @apply text-lg font-semibold leading-snug;
+  }
+
+  h5 {
+    @apply text-base font-semibold leading-snug;
+  }
+
+  h6 {
+    @apply text-sm font-semibold uppercase tracking-wide;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
   }
 
   .bg-white {
