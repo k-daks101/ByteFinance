@@ -8,7 +8,14 @@ export const App = (): JSX.Element => {
     <BrowserRouter>
       <ErrorBoundary>
         <AuthProvider>
-          <AppRoutes />
+          <div className="min-h-screen flex flex-col bg-background text-foreground">
+            <div className="flex-1">
+              <AppRoutes />
+            </div>
+            <footer className="border-t border-primary bg-primary px-6 py-4 text-center text-xs text-primary-foreground font-bold backdrop-blur">
+              Exclusively brought to you by the WiFi Money Group.
+            </footer>
+          </div>
         </AuthProvider>
       </ErrorBoundary>
     </BrowserRouter>
